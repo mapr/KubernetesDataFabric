@@ -1,0 +1,36 @@
+# Copyright (c) 2009 & onwards. MapR Tech, Inc., All rights reserved
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: maprfs-provisioner
+  namespace: mapr-system
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: maprfs-provisioner
+  template:
+    metadata:
+      labels:
+        app: maprfs-provisioner
+    spec:
+      serviceAccountName: maprfs
+      containers:
+      - name: maprfs-provisioner
+        image: maprtech/kubernetes-provisioner:1.0.0.004_centos7
+        imagePullPolicy: Always
+        command:
+        - /maprfs-provisioner
+        volumeMounts:
+        - mountPath: /etc/localtime
+          name: timezone
+          readOnly: true
+        - mountPath: /opt/mapr/logs
+          name: logs
+      volumes:
+      - name: timezone
+        hostPath:
+          path: /etc/localtime
+      - name: logs
+        hostPath:
+          path: /opt/mapr/logs

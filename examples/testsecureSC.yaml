@@ -1,0 +1,19 @@
+# Copyright (c) 2009 & onwards. MapR Tech, Inc., All rights reserved
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+   name: secure-maprfs
+   namespace: mapr-examples
+provisioner: mapr.com/maprfs
+parameters:
+    restServers: "rest1:8443"
+    cldbHosts: "cldb1 cldb2 cldb3"
+    cluster: "mysecurecluster"
+    securityType: "secure"
+    ticketSecretName: "mapr-ticket-secret"
+    ticketSecretNamespace: "mapr-examples"
+    maprSecretName: "mapr-provisioner-secrets"
+    maprSecretNamespace: "mapr-examples"
+    namePrefix: "pv"
+    mountPrefix: "/pv"
+    advisoryquota: "100M"

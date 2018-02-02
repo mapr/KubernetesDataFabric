@@ -1,0 +1,36 @@
+# Copyright (c) 2009 & onwards. MapR Tech, Inc., All rights reserved
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-secure
+  namespace: mapr-examples
+spec:
+  securityContext:
+    runAsUser: 1000
+    fsGroup: 2000
+  containers:
+  - name: base
+    imagePullPolicy: Always
+    image: maprtech/simpleclient:1.00
+    resources:
+      requests:
+        memory: "2Gi"
+        cpu: "500m"
+    command:
+    - bash
+    - -c
+    - /start.sh
+    volumeMounts:
+    - mountPath: /mapr
+      name: maprflex
+  volumes:
+    - name: maprflex
+      flexVolume:
+        driver: "mapr.com/maprfs"
+        options:
+          volumePath: "/"
+          cluster: "mysecurecluster"
+          cldbHosts: "cldb1 cldb2 cldb3"
+          securityType: "secure"
+          ticketSecretName: "mapr-ticket-secret"
+          ticketSecretNamespace: "mapr-examples"

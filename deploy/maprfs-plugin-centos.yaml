@@ -1,0 +1,68 @@
+apiVersion: apps/v1beta2
+kind: DaemonSet
+metadata:
+  name: maprfs-plugin
+  namespace: mapr-system
+  labels:
+    k8s-app: maprfs-plugin
+spec:
+  selector:
+    matchLabels:
+      name: maprfs-plugin
+  template:
+    metadata:
+      labels:
+        name: maprfs-plugin
+    spec:
+      serviceAccountName: maprfs
+      tolerations:
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule
+      containers:
+        - name: maprfs-plugin
+          imagePullPolicy: Always
+          image: maprtech/kubernetes-plugin:1.0.0_024_centos7
+          lifecycle:
+            preStop:
+              exec:
+                command: ["bash", "-c", "/opt/mapr/plugin/pre-stop"]
+          resources:
+            requests:
+              memory: "2Gi"
+              cpu: "500m"
+          command:
+          - bash
+          - -c
+          - /opt/mapr/plugin/copy-plugin
+          env:
+          - name : KUBERNETES_SERVICE_LOCATION
+            value: "mykubernetes.com:6443"
+          volumeMounts:
+          - mountPath: /etc/localtime
+            name: timezone
+            readOnly: true
+          - mountPath: /plugin
+            name: plugindir
+          - mountPath: /host
+            name: host
+          - mountPath: /hostvar
+            name: hostvar
+          - mountPath: /dev/fuse
+            name: fuse
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: timezone
+        hostPath:
+          path: /etc/localtime
+      - name: fuse
+        hostPath:
+          path: /dev/fuse
+      - name: plugindir
+        hostPath:
+          path: /usr/libexec/kubernetes/kubelet-plugins/volume/exec/
+      - name: host
+        hostPath:
+          path: /opt
+      - name: hostvar
+        hostPath:
+          path: /var/run

@@ -1,0 +1,80 @@
+#!/bin/sh
+# Copyright (c) 2009 & onwards. MapR Tech, Inc., All rights reserved
+
+# Start FUSE mount
+mapr_dir="/opt/mapr"
+k8s_dir="$mapr_dir/k8s"
+mapr_lib_path="$mapr_dir/lib"
+mapr_bin="$k8s_dir/bin"
+platinum_program="$mapr_bin/posix-client-platinum"
+basic_program="$mapr_bin/posix-client-basic"
+fuse_log="/opt/mapr/logs/plugin-k8s.log"
+mount_path=$1
+support_path=$2
+ffs_log_path=$3
+kube_path=$4
+sec_type=$5
+ticket_location=$6
+config=$7
+platinum=$8
+flags=$9
+conf_file="$support_path/mapr-clusters.conf"
+fuse_args="$mount_path -d --log_path $ffs_log_path --client_lib_path $support_path --conf_file $conf_file $flags"
+log() {
+  ts=`date "+%Y/%m/%d %H:%M:%S"`
+  prefix="$ts start-fuse: "
+  message="$prefix$1"
+  echo $message >> $fuse_log
+}
+log "INFO  export MAPR_HOME=$k8s_dir"
+export MAPR_HOME=$k8s_dir
+log "INFO  Setting ulimits... "
+ulimit -n 65536 >> $fuse_log
+ulimit -c unlimited >> $fuse_log
+ulimit -l unlimited >> $fuse_log
+log "INFO  Creating config file: $conf_file with: $config"
+echo $config > $conf_file
+log "INFO  Setting LD_LIBRARY_PATH=$mapr_lib_path"
+export LD_LIBRARY_PATH=$mapr_lib_path
+log "INFO  Creating FUSE log directory: $ffs_log_path"
+mkdir -p -m 600 $ffs_log_path
+if [ $sec_type = "secure" ]; then
+  log "INFO  Adding --ticket_path $ticket_location to args"
+  fuse_args="$fuse_args --ticket_path $ticket_location"
+fi
+if [ $platinum == "true" ]; then
+  log "INFO  Using platinum client"
+  fuse_program=$platinum_program
+  log "INFO  Copying $mapr_lib_path/libMapRClient.so to: $support_path/libMapRClient.so.*"
+  cp $mapr_lib_path/libMapRClient.so.1 $support_path/libMapRClient.so.0
+  cp $mapr_lib_path/libMapRClient.so.1 $support_path/libMapRClient.so.1
+  cp $mapr_lib_path/libMapRClient.so.1 $support_path/libMapRClient.so.2
+  cp $mapr_lib_path/libMapRClient.so.1 $support_path/libMapRClient.so.3
+  cp $mapr_lib_path/libMapRClient.so.1 $support_path/libMapRClient.so.4
+else
+  log "INFO  Using basic client"
+  fuse_program=$basic_program
+  log "INFO  Copying $mapr_lib_path/libMapRClient.so to: $support_path/libMapRClient.so.*"
+  cp $mapr_lib_path/libMapRClient.so.1 $support_path/libMapRClient.so.0
+fi
+log "INFO  Mounting FUSE  $fuse_program $fuse_args"
+$fuse_program $fuse_args &
+pid=$!
+pidfile="$support_path/fusepid"
+log "INFO  Writing FUSE pid: $pid to support directory: $pidfile..."
+echo $pid >> $pidfile
+pathfile="$support_path/kpath"
+log "INFO  Writing kpath: $kube_path to support directory: $pathfile..."
+echo $kube_path >> $pathfile
+sleep 5
+log "INFO  Checking FUSE process"
+ps -o pid= -p $pid
+ret=$!
+if [ $ret -eq $pid ]; then
+    log "INFO  FUSE process: $pid is healthy."
+    exit 0
+else
+    log "ERROR  FUSE process: $pid is unhealthy. Check ffs-log.* for more info"
+    exit 1
+fi
+exit 0

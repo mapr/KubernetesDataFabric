@@ -1,0 +1,36 @@
+# Copyright (c) 2009 & onwards. MapR Tech, Inc., All rights reserved
+kind: Pod
+apiVersion: v1
+metadata:
+  name: test-secure-provisioner
+  namespace: mapr-examples
+spec:
+  containers:
+  - name: test-maprfs
+    imagePullPolicy: Always
+    image: maprtech/simpleclient:1.00
+    command:
+    - bash
+    - -c
+    - /start.sh
+    volumeMounts:
+      - name: maprfs-pvc
+        mountPath: "/dynvolume"
+  restartPolicy: "Never"
+  volumes:
+    - name: maprfs-pvc
+      persistentVolumeClaim:
+        claimName: maprfs-secure-pvc
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: maprfs-secure-pvc
+  namespace: mapr-examples
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: secure-maprfs
+  resources:
+    requests:
+      storage: 300M

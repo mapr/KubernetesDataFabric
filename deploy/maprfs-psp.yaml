@@ -1,0 +1,36 @@
+# Copyright (c) 2009 & onwards. MapR Tech, Inc., All rights reserved
+apiVersion: extensions/v1beta1
+kind: PodSecurityPolicy
+metadata:
+  name: maprfs
+annotations:
+    seccomp.security.alpha.kubernetes.io/allowedProfileNames: '*'
+spec:
+  privileged: true
+  allowPrivilegeEscalation: true
+  allowedCapabilities:
+  - '*'
+  volumes:
+  - '*'
+  allowedFlexVolumes:
+  - driver: mapr.com/maprfs
+  allowedHostPaths:
+  - pathPrefix: "/opt/mapr"
+  - pathPrefix: "/usr/libexec/kubernetes/kubelet-plugins/volume/exec/"
+  - pathPrefix: "/var/run"
+  - pathPrefix: "/dev/fuse"
+  - pathPrefix: "/etc/localtime"
+  hostNetwork: true
+  hostPorts:
+  - min: 0
+    max: 65535
+  hostIPC: true
+  hostPID: true
+  runAsUser:
+    rule: 'RunAsAny'
+  seLinux:
+    rule: 'RunAsAny'
+  supplementalGroups:
+    rule: 'RunAsAny'
+  fsGroup:
+    rule: 'RunAsAny'
