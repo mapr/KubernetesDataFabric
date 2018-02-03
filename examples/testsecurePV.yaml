@@ -27,7 +27,7 @@ spec:
   containers:
   - name: base
     imagePullPolicy: Always
-    image: docker.artifactory/maprtech/simpleclient:1.00
+    image: docker.artifactory/maprtech/exampleclient:1.00
     resources:
       requests:
         memory: "2Gi"

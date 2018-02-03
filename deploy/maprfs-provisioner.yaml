@@ -17,7 +17,7 @@ spec:
       serviceAccountName: maprfs
       containers:
       - name: maprfs-provisioner
-        image: maprtech/kubernetes-provisioner:1.0.0.004_centos7
+        image: maprtech/kdf-provisioner:1.0.0.004_centos7
         imagePullPolicy: Always
         command:
         - /maprfs-provisioner

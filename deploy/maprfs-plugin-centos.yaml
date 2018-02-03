@@ -21,7 +21,7 @@ spec:
       containers:
         - name: maprfs-plugin
           imagePullPolicy: Always
-          image: maprtech/kubernetes-plugin:1.0.0_024_centos7
+          image: maprtech/kdf-plugin:1.0.0_024_centos7
           lifecycle:
             preStop:
               exec:

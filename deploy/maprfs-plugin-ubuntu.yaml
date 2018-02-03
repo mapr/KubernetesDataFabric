@@ -22,7 +22,7 @@ spec:
       containers:
         - name: maprfs-plugin
           imagePullPolicy: Always
-          image: maprtech/kubernetes-plugin:1.0.0_008_ubuntu
+          image: maprtech/kdf-plugin:1.0.0_008_ubuntu
           lifecycle:
             preStop:
               exec:

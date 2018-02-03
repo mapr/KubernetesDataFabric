@@ -8,7 +8,7 @@ spec:
   containers:
   - name: test-maprfs
     imagePullPolicy: Always
-    image: maprtech/simpleclient:1.00
+    image: maprtech/exampleclient:1.00
     command:
     - bash
     - -c
