@@ -6,13 +6,12 @@ metadata:
   namespace: mapr-examples
 spec:
   containers:
-  - name: test-maprfs
+  - name: busybox
+    image: busybox
+    args:
+    - sleep
+    - "1000000"
     imagePullPolicy: Always
-    image: maprtech/exampleclient:1.00
-    command:
-    - bash
-    - -c
-    - /start.sh
     volumeMounts:
       - name: maprfs-pvc
         mountPath: "/dynvolume"

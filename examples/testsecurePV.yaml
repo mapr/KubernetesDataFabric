@@ -25,17 +25,16 @@ metadata:
   namespace: mapr-examples
 spec:
   containers:
-  - name: base
+  - name: busybox
+    image: busybox
+    args:
+    - sleep
+    - "1000000"
     imagePullPolicy: Always
-    image: docker.artifactory/maprtech/exampleclient:1.00
     resources:
       requests:
         memory: "2Gi"
         cpu: "500m"
-    command:
-    - bash
-    - -c
-    - /start.sh
     volumeMounts:
     - mountPath: /mapr
       name: maprflex

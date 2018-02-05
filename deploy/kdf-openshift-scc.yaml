@@ -1,0 +1,27 @@
+# Copyright (c) 2009 & onwards. MapR Tech, Inc., All rights reserved
+apiVersion: v1
+allowHostDirVolumePlugin: true
+defaultAddCapabilities: null
+kind: SecurityContextConstraints
+metadata:
+  annotations: null
+  name: maprkdf-scc
+priority: null
+readOnlyRootFilesystem: false
+runAsUser:
+  type: RunAsAny
+fsGroup:
+  type: RunAsAny
+seLinuxContext:
+  type: RunAsAny
+supplementalGroups:
+  type: RunAsAny
+volumes:
+- configMap
+- emptyDir
+- projected
+- secret
+- downwardAPI
+- hostPath
+- flexVolume
+allowHostDirVolumePlugin: true

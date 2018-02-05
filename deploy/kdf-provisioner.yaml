@@ -1,22 +1,21 @@
-# Copyright (c) 2009 & onwards. MapR Tech, Inc., All rights reserved
-apiVersion: apps/v1beta2
+apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: maprfs-provisioner
+  name: mapr-kdfprovisioner
   namespace: mapr-system
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: maprfs-provisioner
+      app: mapr-kdfprovisioner
   template:
     metadata:
       labels:
-        app: maprfs-provisioner
+        app: mapr-kdfprovisioner
     spec:
-      serviceAccountName: maprfs
+      serviceAccountName: maprkdf
       containers:
-      - name: maprfs-provisioner
+      - name: mapr-kdfprovisioner
         image: maprtech/kdf-provisioner:1.0.0.004_centos7
         imagePullPolicy: Always
         command:

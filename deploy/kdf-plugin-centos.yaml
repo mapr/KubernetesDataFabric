@@ -1,25 +1,25 @@
-apiVersion: apps/v1beta2
+apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: maprfs-plugin
+  name: mapr-kdfplugin
   namespace: mapr-system
   labels:
-    k8s-app: maprfs-plugin
+    k8s-app: mapr-kdfplugin
 spec:
   selector:
     matchLabels:
-      name: maprfs-plugin
+      name: mapr-kdfplugin
   template:
     metadata:
       labels:
-        name: maprfs-plugin
+        name: mapr-kdfplugin
     spec:
-      serviceAccountName: maprfs
+      serviceAccountName: maprkdf
       tolerations:
       - key: node-role.kubernetes.io/master
         effect: NoSchedule
       containers:
-        - name: maprfs-plugin
+        - name: mapr-kdfplugin
           imagePullPolicy: Always
           image: maprtech/kdf-plugin:1.0.0_024_centos7
           lifecycle:
@@ -36,7 +36,7 @@ spec:
           - /opt/mapr/plugin/copy-plugin
           env:
           - name : KUBERNETES_SERVICE_LOCATION
-            value: "mykubernetes.com:6443"
+            value: "changeme!:6443"
           volumeMounts:
           - mountPath: /etc/localtime
             name: timezone

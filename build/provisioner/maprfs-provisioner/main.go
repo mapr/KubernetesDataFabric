@@ -515,7 +515,7 @@ func (p *maprProvisioner) Provision(options controller.VolumeOptions) (*v1.Persi
 func (p *maprProvisioner) Delete(volume *v1.PersistentVolume) error {
 
 	p.eventTarget = volume
-	ann, ok := volume.Annotations["mapr.com/maprProvisionerIdentity"]
+	_, ok := volume.Annotations["mapr.com/maprProvisionerIdentity"]
 	if !ok {
 		p.eventRecorder.Event(volume, v1.EventTypeWarning, "DeleteVolumeWarning", "identity annotation on PV is not mapr.com/maprProvisionerIdentity")
 		return &controller.IgnoredError{Reason: "identity annotation on PV is not mapr.com/maprProvisionerIdentity"}
