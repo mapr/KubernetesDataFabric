@@ -1,0 +1,102 @@
+#!/bin/sh
+# Copyright (c) 2009 & onwards. MapR Tech, Inc., All rights reserved
+
+# Move plugin files from container to Kubernetes host node
+vendor=mapr.com
+driver=maprfs
+no=0
+yes=1
+plugin_dir="/plugin/$vendor${vendor:+"~"}${driver}"
+host_mapr="$plugin_dir/mapr"
+host_var="$plugin_dir/var"
+host_etc="/hostetc"
+docker_mapr="/opt/mapr"
+host_log="/host/mapr/logs"
+k8s_path="$host_mapr/k8s"
+mapr_lib="$docker_mapr/lib"
+mapr_bin="$docker_mapr/bin"
+host_lib="$host_mapr/lib"
+host_bin="$k8s_path/bin"
+host_server="$k8s_path/server"
+host_hadoop="$k8s_path/hadoop"
+host_conf="$k8s_path/conf"
+host_support="$k8s_path/support"
+host_mounts="$k8s_path/mounts"
+install_log="$host_log/install-k8s-plugin.log"
+current_version_file="$docker_mapr/plugin/RELEASE"
+previous_version_file="$k8s_path/RELEASE"
+save_file="$k8s_path/SAVE"
+sa_path="$host_var/secrets/kubernetes.io"
+current_version="1"
+previous_version="1"
+versions_match=$no
+log() {
+  ts=`date "+%Y/%m/%d %H:%M:%S"`
+  prefix="$ts copy-plugin: "
+  message="$prefix$1"
+  echo $message >> $install_log
+}
+# Import our environment variables from systemd
+for e in $(tr "\000" "\n" < /proc/1/environ); do
+    eval "export $e"
+done
+if [ ! -d $host_log ]; then
+  mkdir -p -m 700 $host_log
+fi
+# Create directories on Kubernetes Host
+log "INFO  === Starting 1st stage copy of plugin files to host ==="
+# Setup plugin directory
+if [ ! -d $plugin_dir ]; then
+  log "INFO  Creating plugin dir..."
+  mkdir -p -m 700 $plugin_dir
+fi
+log "INFO  Creating plugin dir..."
+mkdir -p -m 700 $k8s_path
+log "INFO  Creating RELEASE file"
+cat $current_version_file > $previous_version_file
+log "INFO  Copying plugin files..."
+log "INFO  Creating bin dir..."
+mkdir -p -m 700 $host_bin
+log "INFO  Creating lib dir..."
+mkdir -p -m 700 $host_lib
+log "INFO  Creating conf dir..."
+mkdir -p -m 700 $host_conf
+log "INFO  Creating support dir..."
+mkdir -p -m 700 $host_support
+log "INFO  Creating mounts dir..."
+mkdir -p -m 700 $host_mounts
+log "INFO  Copying files..."
+log "INFO  Copying lib files..."
+cp -r $mapr_lib/libfuse.* $host_lib
+cp -r $mapr_lib/libMapRClient_c.* $host_lib
+cp -r $mapr_lib/libMapRClient.* $host_lib
+cp $mapr_lib/libjvm.so $host_lib/libjvm.so
+log "INFO  Copying bin files..."
+cp -r $mapr_bin/fusermount $host_bin
+cp -r $mapr_bin/stubfuse $host_bin
+cp -r $mapr_bin/posix-client-platinum $host_bin
+cp -r $mapr_bin/posix-client-basic $host_bin
+log "INFO  Copying support scripts..."
+cp $docker_mapr/plugin/start-fuse $host_bin/start-fuse
+chmod 755 $host_bin/*
+log "INFO  Copy service account..."
+mkdir -p $sa_path
+cp -r /var/run/secrets/kubernetes.io/serviceaccount $sa_path
+log "INFO  Create INFO file..."
+echo "$KUBERNETES_SERVICE_LOCATION" > $k8s_path/INFO
+log "INFO  Copy misc files..."
+cp -r $docker_mapr/LICENSE.doc $k8s_path/LICENSE.doc
+cp -r $docker_mapr/NOTICE.txt $k8s_path/NOTICE.txt
+cp -r $docker_mapr/MapRBuildVersion $k8s_path/MapRBuildVersion
+log "INFO  Copying copy-to-mapr file. cp $docker_mapr/plugin/copy2mapr $host_etc/copy2mapr"
+cp $docker_mapr/plugin/copy2mapr $host_etc/copy2mapr
+log "INFO  Creating FLEXPATH file..."
+echo "$FLEXVOLUME_PLUGIN_PATH" > $host_etc/FLEXPATH
+# Do NOT do a simple copy of plugin. It is not an atomic operation
+log "INFO  Copying plugin file..."
+cp $docker_mapr/plugin/maprfs $plugin_dir/.maprfs
+# Rename plugin file as atomic operation
+log "INFO  Renaming plugin file..."
+mv -f "$plugin_dir/.maprfs" "$plugin_dir/maprfs"
+log "INFO  === Sleeping forever to keep container up ==="
+while true; do sleep 86400; done

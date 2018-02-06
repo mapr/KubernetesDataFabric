@@ -21,7 +21,7 @@ spec:
       containers:
         - name: mapr-kdfplugin
           imagePullPolicy: Always
-          image: maprtech/kdf-plugin:1.0.0_008_ubuntu
+          image: maprtech/kdf-plugin:1.0.0_009_ubuntu
           lifecycle:
             preStop:
               exec:

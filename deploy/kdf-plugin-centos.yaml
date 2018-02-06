@@ -21,7 +21,7 @@ spec:
       containers:
         - name: mapr-kdfplugin
           imagePullPolicy: Always
-          image: maprtech/kdf-plugin:1.0.0_024_centos7
+          image: maprtech/kdf-plugin:1.0.0_025_centos7
           lifecycle:
             preStop:
               exec:

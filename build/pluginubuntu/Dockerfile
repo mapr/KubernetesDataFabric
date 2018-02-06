@@ -57,12 +57,14 @@ RUN apk add --no-cache bash
 # Copy MapR files
 COPY --from=1 /opt/mapr /opt/mapr
 # Copy script files
-COPY copy-plugin /opt/mapr/plugin/copy-plugin
+COPY copy2host /opt/mapr/plugin/copy2host
+COPY copy2mapr /opt/mapr/plugin/copy2mapr
 COPY start-fuse /opt/mapr/plugin/start-fuse
 COPY pre-stop /opt/mapr/plugin/pre-stop
 # Build GO code
 COPY --from=0 /go/src/maprfs/maprfs /opt/mapr/plugin/maprfs
-RUN chmod +x /opt/mapr/plugin/copy-plugin; \
+RUN chmod +x /opt/mapr/plugin/copy2host; \
+    chmod +x /opt/mapr/plugin/copy2mapr; \
     chmod +x /opt/mapr/plugin/pre-stop; \
     chmod +x /opt/mapr/plugin/start-fuse; \
     chmod +x /opt/mapr/plugin/maprfs; \
@@ -70,4 +72,4 @@ RUN chmod +x /opt/mapr/plugin/copy-plugin; \
     ts=`stat -c %Y /opt/mapr/plugin/RELEASE`; \
     echo "$ts" > /opt/mapr/plugin/RELEASE
 WORKDIR /opt/mapr/plugin/
-CMD ["bash -c /opt/mapr/plugin/copy-plugin"]
+CMD ["bash -c /opt/mapr/plugin/copy2host"]

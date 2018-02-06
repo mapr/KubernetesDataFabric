@@ -6,13 +6,11 @@ vendor=mapr.com
 driver=maprfs
 no=0
 yes=1
-host_mapr="/host/mapr"
-host_var="/hostvar"
-docker_mapr="/opt/mapr"
-k8s_path="$host_mapr/k8s"
-mapr_lib="$docker_mapr/lib"
-mapr_bin="$docker_mapr/bin"
+host_mapr="/opt/mapr"
+host_var="/var/run"
 host_log="$host_mapr/logs"
+install_log="$host_log/install-k8s-plugin.log"
+k8s_path="$host_mapr/k8s"
 host_lib="$host_mapr/lib"
 host_bin="$k8s_path/bin"
 host_server="$k8s_path/server"
@@ -20,41 +18,42 @@ host_hadoop="$k8s_path/hadoop"
 host_conf="$k8s_path/conf"
 host_support="$k8s_path/support"
 host_mounts="$k8s_path/mounts"
-install_log="$host_log/install-k8s-plugin.log"
-plugin_dir="/plugin/$vendor${vendor:+"~"}${driver}"
-current_version_file="$docker_mapr/plugin/RELEASE"
-previous_version_file="$k8s_path/RELEASE"
-save_file="$k8s_path/SAVE"
-sa_path="$host_var/secrets/kubernetes.io"
-current_version="1"
-previous_version="1"
-versions_match=$no
 log() {
   ts=`date "+%Y/%m/%d %H:%M:%S"`
   prefix="$ts copy-plugin: "
   message="$prefix$1"
   echo $message >> $install_log
 }
-# Import our environment variables from systemd
-for e in $(tr "\000" "\n" < /proc/1/environ); do
-    eval "export $e"
-done
+log "INFO  === Starting 2nd stage copy of plugin files. From plugin dir to $host_mapr ==="
+flex_path=`cat /etc/kubernetes/FLEXPATH`
+log "INFO   FLEXPATH=$flex_path"
+plugin_dir="$flex_path/$vendor${vendor:+"~"}${driver}"
+docker_mapr="$plugin_dir/mapr/k8s"
+mapr_lib="$plugin_dir/mapr/lib"
+mapr_bin="$docker_mapr/bin"
+current_version_file="$docker_mapr/RELEASE"
+previous_version_file="$k8s_path/RELEASE"
+save_file="$k8s_path/SAVE"
+host_sapath="$host_var/secrets/kubernetes.io"
+tmp_sapath="$plugin_dir/var/run/secrets/kubernetes.io/serviceaccount"
+current_version="1"
+previous_version="1"
+versions_match=$no
+
 # Create directories on Kubernetes Host
-if [ ! -d $host_log ]; then
+if [ ! -d $k8s_path ]; then
+    log "INFO  Creating log dir at: $host_log"
     mkdir -p -m 700 $host_log
-    log "INFO  === Starting copy of plugin files to host ==="
-    log "INFO  Created log dir..."
-    log "INFO  Creating plugin dir..."
+    log "INFO  Creating plugin dir at: $k8s_path"
     mkdir -p -m 700 $k8s_path
-    log "INFO  Creating RELEASE file"
+    log "INFO  Creating RELEASE file at: $previous_version_file"
     cat $current_version_file > $previous_version_file
   else
-      log "INFO  === Starting copy of plugin files to host ==="
       log "WARNING  Installing plugin when MapR directory detected on host node."
       current_version=`cat $current_version_file`
-      log "INFO  Current plugin RELEASE timestamp: $current_version"
+      log "INFO  Current plugin RELEASE timestamp: $current_version from: $current_version_file"
       previous_version=`cat $previous_version_file`
-      log "INFO  Previous plugin RELEASE timestamp: $previous_version"
+      log "INFO  Previous plugin RELEASE timestamp: $previous_version from: $previous_version_file"
       if [ "$current_version" = "$previous_version" ]; then
         versions_match=$yes
         touch $save_file
@@ -67,67 +66,50 @@ if [ ! -d $host_log ]; then
 fi
 log "INFO  Copying plugin files..."
 if [ ! -d $host_bin ]; then
-    log "INFO  Creating bin dir..."
+    log "INFO  Creating bin dir at: $host_bin"
     mkdir -p -m 700 $host_bin
-else
-    log "WARNING  $host_bin exists. May overwrite bin files.."
 fi
 if [ ! -d $host_lib ]; then
-    log "INFO  Creating lib dir..."
+    log "INFO  Creating lib dir at: $host_lib"
     mkdir -p -m 700 $host_lib
-else
+elif [ $versions_match -eq $no ]; then
     log "WARNING  $host_lib exists. May overwrite lib files.."
 fi
 if [ ! -d $host_conf ]; then
-    log "INFO  Creating conf dir..."
+    log "INFO  Creating conf dir at: $host_conf"
     mkdir -p -m 700 $host_conf
-else
-    log "WARNING  $host_conf exists. May overwrite conf files.."
 fi
 if [ ! -d $host_support ]; then
-    log "INFO  Creating support dir..."
+    log "INFO  Creating support dir at: $host_support "
     mkdir -p -m 700 $host_support
 fi
 if [ ! -d $host_mounts ]; then
-    log "INFO  Creating mounts dir..."
+    log "INFO  Creating mounts dir at: $host_mounts"
     mkdir -p -m 700 $host_mounts
 fi
 # Create files on host
 if [ $versions_match -eq $no ]; then
     log "INFO  Copying files..."
-    log "INFO  Copying lib files..."
+    log "INFO  Copying lib files from: $mapr_lib to: $host_lib"
     cp -r $mapr_lib/libfuse.* $host_lib
     cp -r $mapr_lib/libMapRClient_c.* $host_lib
     cp -r $mapr_lib/libMapRClient.* $host_lib
     cp $mapr_lib/libjvm.so $host_lib/libjvm.so
-    log "INFO  Copying bin files..."
+    log "INFO  Copying bin files from: $mapr_bin to: $host_bin"
     cp -r $mapr_bin/fusermount $host_bin
     cp -r $mapr_bin/stubfuse $host_bin
     cp -r $mapr_bin/posix-client-platinum $host_bin
     cp -r $mapr_bin/posix-client-basic $host_bin
 fi
-log "INFO  Copying support scripts..."
-cp $docker_mapr/plugin/start-fuse $host_bin/start-fuse
-chmod 755 $host_bin/*
-# Setup plugin directory
-if [ ! -d $plugin_dir ]; then
-  log "INFO  Creating plugin dir..."
-  mkdir -p -m 700 $plugin_dir
-fi
-log "INFO  Copy service account..."
-mkdir -p $sa_path
-cp -r /var/run/secrets/kubernetes.io/serviceaccount $sa_path
-log "INFO  Create INFO file..."
-echo "$KUBERNETES_SERVICE_LOCATION" > $k8s_path/INFO
-log "INFO  Copy misc files..."
+log "INFO  Copying support scripts from: $docker_mapr/plugin/start-fuse to: $host_bin/start-fuse"
+cp $mapr_bin/start-fuse $host_bin/start-fuse
+log "INFO  Copy service account from: $tmp_sapath to: $host_sapath "
+mkdir -p $host_sapath
+cp -r $tmp_sapath $host_sapath
+log "INFO  Copy INFO file from: $docker_mapr/INFO to: $k8s_path/INFO"
+cp $docker_mapr/INFO $k8s_path/INFO
+log "INFO  Copy misc files from: $docker_mapr to: $k8s_path"
 cp -r $docker_mapr/LICENSE.doc $k8s_path/LICENSE.doc
 cp -r $docker_mapr/NOTICE.txt $k8s_path/NOTICE.txt
 cp -r $docker_mapr/MapRBuildVersion $k8s_path/MapRBuildVersion
-# Do NOT do a simple copy of plugin. It is not an atomic operation
-log "INFO  Copying plugin file..."
-cp $docker_mapr/plugin/maprfs $plugin_dir/.maprfs
-# Rename plugin file as atomic operation
-log "INFO  Renaming plugin file..."
-mv -f "$plugin_dir/.maprfs" "$plugin_dir/maprfs"
-log "INFO  === Sleeping forever to keep container up ==="
-while true; do sleep 86400; done
+exit 0

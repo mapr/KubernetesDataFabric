@@ -4,8 +4,5 @@
 # Cleanup Kubernetes host node after plugin uninstall.
 vendor=mapr.com
 driver=maprfs
-host_mapr="/host/mapr"
-install_dir="$host_mapr/k8s"
 
-#rm -rf $install_dir
 rm -rf /plugin/$vendor~$driver

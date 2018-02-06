@@ -16,8 +16,6 @@ spec:
   allowedHostPaths:
     - pathPrefix: "/opt"
     - pathPrefix: "/usr/libexec/kubernetes/kubelet-plugins/volume/exec/"
-    - pathPrefix: "/var/run"
-    - pathPrefix: "/dev/fuse"
     - pathPrefix: "/etc/localtime"
   allowedFlexVolumes:
     - driver: mapr.com/maprfs

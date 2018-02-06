@@ -423,13 +423,20 @@ func unmount(args []string, cleanup bool) {
 // doInit prepares host node for MapRFS plugin
 func doInit() {
 	Plugin.Println("INFO  === Starting init of MapRfs Plugin ===")
-	_, err := os.Stat(save_file)
+	cmd := exec.Command("/etc/kubernetes/copy2mapr")
+	err := cmd.Run()
+	if err != nil {
+		Plugin.Printf("ERROR  Failed to do 2nd stage copy. Reason: %v", err)
+		fmt.Printf("{ \"status\": \"Failure\" , \"message\": \"Failed to do 2nd stage copy. \" }")
+		os.Exit(1)
+	}
+	_, err = os.Stat(save_file)
 	if err != nil {
 		cleanup()
 		linkFiles()
 		// set hostname for FUSE
 		Plugin.Printf("INFO  Setting hostname... %s/hostname", k8s_dir)
-		cmd := exec.Command("/bin/hostname", "--fqdn")
+		cmd = exec.Command("/bin/hostname", "--fqdn")
 		out, err := cmd.Output()
 		hostFile := k8s_dir + "/hostname"
 		err = ioutil.WriteFile(hostFile, out, 0600)
@@ -464,6 +471,7 @@ func doInit() {
 func main() {
 	args := os.Args
 	op := os.Args[1]
+	os.MkdirAll(log_path, 0700)
 	f, err := os.OpenFile(plugin_log, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0600)
 	if err != nil {
 		fmt.Printf("ERROR  Can't create plugin log! Reason: %v \n", err)
