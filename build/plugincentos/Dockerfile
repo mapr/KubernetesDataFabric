@@ -27,12 +27,12 @@ RUN rpm --import http://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7; \
 WORKDIR /tmp
 
 # Main Docker Build
-RUN wget http://artifactory.devops.lab/artifactory/list/core-rpm/master/20180202054213-7e96f80/mapr-client-6.1.0.20180202054213.GA-1.x86_64.rpm; \
-    wget http://artifactory.devops.lab/artifactory/list/core-rpm/master/20180202054213-7e96f80/mapr-posix-client-basic-6.1.0.20180202054213.GA-1.x86_64.rpm; \
-    wget http://artifactory.devops.lab/artifactory/list/core-rpm/master/20180202054213-7e96f80/mapr-posix-client-platinum-6.1.0.20180202054213.GA-1.x86_64.rpm; \
-    rpm -Uvh mapr-client-6.1.0.20180202054213.GA-1.x86_64.rpm; \
-    rpm -Uvh mapr-posix-client-basic-6.1.0.20180202054213.GA-1.x86_64.rpm; \
-    rpm -Uvh mapr-posix-client-platinum-6.1.0.20180202054213.GA-1.x86_64.rpm; \
+RUN wget http://archive.mapr.com/tools/KubernetesDataFabric/v1.0.0/redhat/mapr-client-6.0.0.20180206041848.GA-20180206041848.x86_64.rpm; \
+    wget http://archive.mapr.com/tools/KubernetesDataFabric/v1.0.0/redhat/mapr-posix-client-basic-6.0.0.20180206041848.GA-1.x86_64.rpm; \
+    wget http://archive.mapr.com/tools/KubernetesDataFabric/v1.0.0/redhat/mapr-posix-client-platinum-6.0.0.20180206041848.GA-1.x86_64.rpm; \
+    rpm -Uvh mapr-client-6.0.0.20180206041848.GA-20180206041848.x86_64.rpm; \
+    rpm -Uvh mapr-posix-client-basic-6.0.0.20180206041848.GA-1.x86_64.rpm; \
+    rpm -Uvh mapr-posix-client-platinum-6.0.0.20180206041848.GA-1.x86_64.rpm; \
     mkdir -p /tmp/lib; \
     cp -r /opt/mapr/lib/libfuse.* /tmp/lib; \
     cp -r /opt/mapr/lib/libMapRClient_c.* /tmp/lib; \

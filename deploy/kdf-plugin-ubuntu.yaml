@@ -21,7 +21,11 @@ spec:
       containers:
         - name: mapr-kdfplugin
           imagePullPolicy: Always
-          image: maprtech/kdf-plugin:1.0.0_009_ubuntu
+          image: maprtech/kdf-plugin:1.0.0_010_ubuntu
+          command:
+          - bash
+          - -c
+          - /opt/mapr/plugin/copy2host
           lifecycle:
             preStop:
               exec:
@@ -30,13 +34,11 @@ spec:
             requests:
               memory: "2Gi"
               cpu: "500m"
-          command:
-          - bash
-          - -c
-          - /opt/mapr/plugin/copy-plugin
           env:
           - name : KUBERNETES_SERVICE_LOCATION
-            value: "changeme!:6443"
+            value: "10.10.108.153:6443"
+          - name : FLEXVOLUME_PLUGIN_PATH
+            value: "/usr/libexec/kubernetes/kubelet-plugins/volume/exec"
           volumeMounts:
           - mountPath: /etc/localtime
             name: timezone
@@ -45,19 +47,19 @@ spec:
             name: plugindir
           - mountPath: /host
             name: host
-          - mountPath: /dev/fuse
-            name: fuse
+          - mountPath: /hostetc
+            name: hostetc
       terminationGracePeriodSeconds: 30
       volumes:
       - name: timezone
         hostPath:
           path: /etc/localtime
-      - name: fuse
-        hostPath:
-          path: /dev/fuse
       - name: plugindir
         hostPath:
           path: /usr/libexec/kubernetes/kubelet-plugins/volume/exec/
       - name: host
         hostPath:
           path: /opt
+      - name: hostetc
+        hostPath:
+          path: /etc/kubernetes

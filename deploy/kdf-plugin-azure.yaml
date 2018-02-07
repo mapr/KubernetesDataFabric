@@ -21,7 +21,7 @@ spec:
       containers:
         - name: mapr-kdfplugin
           imagePullPolicy: Always
-          image: maprtech/kdf-plugin:1.0.0_026_centos7
+          image: maprtech/kdf-plugin:1.0.0_010_ubuntu
           command:
           - bash
           - -c
@@ -36,9 +36,9 @@ spec:
               cpu: "500m"
           env:
           - name : KUBERNETES_SERVICE_LOCATION
-            value: "10.10.108.153:6443"
+            value: "sar-aks-45f1bdf3.hcp.eastus.azmk8s.io:443"
           - name : FLEXVOLUME_PLUGIN_PATH
-            value: "/usr/libexec/kubernetes/kubelet-plugins/volume/exec"
+            value: "/etc/kubernetes/volumeplugins"
           volumeMounts:
           - mountPath: /etc/localtime
             name: timezone
@@ -56,7 +56,7 @@ spec:
           path: /etc/localtime
       - name: plugindir
         hostPath:
-          path: /usr/libexec/kubernetes/kubelet-plugins/volume/exec/
+          path: /etc/kubernetes/volumeplugins
       - name: host
         hostPath:
           path: /opt
