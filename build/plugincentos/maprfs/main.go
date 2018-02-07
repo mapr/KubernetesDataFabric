@@ -21,6 +21,7 @@ import (
 
 const (
 	install_dir         = "/opt/mapr"
+	copy_path           = "/etc/kubernetes/mapr-kdf"
 	k8s_dir             = install_dir + "/k8s"
 	log_path            = install_dir + "/logs"
 	client_lib_path     = install_dir + "/lib"
@@ -28,8 +29,10 @@ const (
 	client_mounts_path  = k8s_dir + "/mounts/"
 	client_support_path = k8s_dir + "/support/"
 	save_file           = k8s_dir + "/SAVE"
+	info_file           = k8s_dir + "/serviceinfo"
 	plugin_log          = log_path + "/plugin-k8s.log"
 	fuse_script         = client_bin_path + "/start-fuse"
+	copy_script         = copy_path + "/copy2mapr"
 	pod_idx             = 5
 	vol_idx             = 8
 	cldb_default_port   = ":7222"
@@ -192,8 +195,7 @@ func startFuse(kpath string, options map[string]string) string {
 			os.Exit(1)
 		}
 		// read INFO
-		infofile := k8s_dir + "/INFO"
-		info, err := ioutil.ReadFile(infofile)
+		info, err := ioutil.ReadFile(info_file)
 		if err != nil {
 			Plugin.Printf("ERROR  Failed to read INFO file. Reason: %s", err)
 			fmt.Print("{ \"status\": \"Failure\" , \"message\": \"Failed to read INFO file \" }")
@@ -202,9 +204,10 @@ func startFuse(kpath string, options map[string]string) string {
 			sinfo := string(info)
 			sinfo = strings.Trim(sinfo, "\n")
 			kinfo := strings.Split(sinfo, ":")
-			Plugin.Printf("INFO  Setting khost= %s kport=%s", kinfo[0], kinfo[1])
+			Plugin.Printf("INFO  Setting khost=%s kport=%s", kinfo[0], kinfo[1])
 			os.Setenv("KUBERNETES_SERVICE_HOST", kinfo[0])
 			os.Setenv("KUBERNETES_SERVICE_PORT", kinfo[1])
+			os.Setenv("KUBERNETES_SERVICE_PORT_HTTPS", kinfo[1])
 		}
 		// Call kubeclient to get ticket in secret
 		Plugin.Println("INFO  Starting kube client...")
@@ -423,7 +426,7 @@ func unmount(args []string, cleanup bool) {
 // doInit prepares host node for MapRFS plugin
 func doInit() {
 	Plugin.Println("INFO  === Starting init of MapRfs Plugin ===")
-	cmd := exec.Command("/etc/kubernetes/copy2mapr")
+	cmd := exec.Command(copy_script)
 	err := cmd.Run()
 	if err != nil {
 		Plugin.Printf("ERROR  Failed to do 2nd stage copy. Reason: %v", err)
@@ -471,7 +474,10 @@ func doInit() {
 func main() {
 	args := os.Args
 	op := os.Args[1]
-	os.MkdirAll(log_path, 0700)
+	_, err := os.Stat(log_path)
+	if err != nil {
+		os.MkdirAll(log_path, 0700)
+	}
 	f, err := os.OpenFile(plugin_log, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0600)
 	if err != nil {
 		fmt.Printf("ERROR  Can't create plugin log! Reason: %v \n", err)

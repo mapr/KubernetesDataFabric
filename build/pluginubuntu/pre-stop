@@ -6,3 +6,4 @@ vendor=mapr.com
 driver=maprfs
 
 rm -rf /plugin/$vendor~$driver
+rm -rf /hostetc/mapr-kdf

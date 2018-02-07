@@ -25,17 +25,17 @@ log() {
   echo $message >> $install_log
 }
 log "INFO  === Starting 2nd stage copy of plugin files. From plugin dir to $host_mapr ==="
-flex_path=`cat /etc/kubernetes/FLEXPATH`
-log "INFO   FLEXPATH=$flex_path"
+flex_path=`cat /etc/kubernetes/mapr-kdf/flexpath`
+log "INFO   flexpath=$flex_path"
 plugin_dir="$flex_path/$vendor${vendor:+"~"}${driver}"
-docker_mapr="$plugin_dir/mapr/k8s"
-mapr_lib="$plugin_dir/mapr/lib"
+docker_mapr="$plugin_dir/.mapr/k8s"
+mapr_lib="$plugin_dir/.mapr/lib"
 mapr_bin="$docker_mapr/bin"
 current_version_file="$docker_mapr/RELEASE"
 previous_version_file="$k8s_path/RELEASE"
 save_file="$k8s_path/SAVE"
 host_sapath="$host_var/secrets/kubernetes.io"
-tmp_sapath="$plugin_dir/var/run/secrets/kubernetes.io/serviceaccount"
+tmp_sapath="$plugin_dir/.var/secrets/kubernetes.io/serviceaccount"
 current_version="1"
 previous_version="1"
 versions_match=$no
@@ -104,10 +104,11 @@ fi
 log "INFO  Copying support scripts from: $docker_mapr/plugin/start-fuse to: $host_bin/start-fuse"
 cp $mapr_bin/start-fuse $host_bin/start-fuse
 log "INFO  Copy service account from: $tmp_sapath to: $host_sapath "
-mkdir -p $host_sapath
+rm -rf "$host_sapath"
+mkdir -p 700 $host_sapath
 cp -r $tmp_sapath $host_sapath
-log "INFO  Copy INFO file from: $docker_mapr/INFO to: $k8s_path/INFO"
-cp $docker_mapr/INFO $k8s_path/INFO
+log "INFO  Copy serviceinfo file from: $docker_mapr/serviceinfo to: $k8s_path/serviceinfo"
+cp $docker_mapr/serviceinfo $k8s_path/serviceinfo
 log "INFO  Copy misc files from: $docker_mapr to: $k8s_path"
 cp -r $docker_mapr/LICENSE.doc $k8s_path/LICENSE.doc
 cp -r $docker_mapr/NOTICE.txt $k8s_path/NOTICE.txt

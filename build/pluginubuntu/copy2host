@@ -7,9 +7,9 @@ driver=maprfs
 no=0
 yes=1
 plugin_dir="/plugin/$vendor${vendor:+"~"}${driver}"
-host_mapr="$plugin_dir/mapr"
-host_var="$plugin_dir/var"
-host_etc="/hostetc"
+host_mapr="$plugin_dir/.mapr"
+host_var="$plugin_dir/.var"
+host_etc="/hostetc/mapr-kdf"
 docker_mapr="/opt/mapr"
 host_log="/host/mapr/logs"
 k8s_path="$host_mapr/k8s"
@@ -25,7 +25,6 @@ host_mounts="$k8s_path/mounts"
 install_log="$host_log/install-k8s-plugin.log"
 current_version_file="$docker_mapr/plugin/RELEASE"
 previous_version_file="$k8s_path/RELEASE"
-save_file="$k8s_path/SAVE"
 sa_path="$host_var/secrets/kubernetes.io"
 current_version="1"
 previous_version="1"
@@ -47,56 +46,57 @@ fi
 log "INFO  === Starting 1st stage copy of plugin files to host ==="
 # Setup plugin directory
 if [ ! -d $plugin_dir ]; then
-  log "INFO  Creating plugin dir..."
+  log "INFO  Creating plugin dir at: $plugin_dir"
   mkdir -p -m 700 $plugin_dir
 fi
-log "INFO  Creating plugin dir..."
+log "INFO  Creating plugin dir at: $k8s_path"
 mkdir -p -m 700 $k8s_path
-log "INFO  Creating RELEASE file"
+log "INFO  Creating RELEASE file at: $previous_version_file"
 cat $current_version_file > $previous_version_file
 log "INFO  Copying plugin files..."
-log "INFO  Creating bin dir..."
+log "INFO  Creating bin dir at: $host_bin"
 mkdir -p -m 700 $host_bin
-log "INFO  Creating lib dir..."
+log "INFO  Creating lib dir at: $host_lib"
 mkdir -p -m 700 $host_lib
-log "INFO  Creating conf dir..."
+log "INFO  Creating conf dir at: $host_conf"
 mkdir -p -m 700 $host_conf
-log "INFO  Creating support dir..."
+log "INFO  Creating support dir at: $host_support"
 mkdir -p -m 700 $host_support
-log "INFO  Creating mounts dir..."
+log "INFO  Creating mounts dir at: $host_mounts"
 mkdir -p -m 700 $host_mounts
 log "INFO  Copying files..."
-log "INFO  Copying lib files..."
+log "INFO  Copying lib files to: $host_lib"
 cp -r $mapr_lib/libfuse.* $host_lib
 cp -r $mapr_lib/libMapRClient_c.* $host_lib
 cp -r $mapr_lib/libMapRClient.* $host_lib
 cp $mapr_lib/libjvm.so $host_lib/libjvm.so
-log "INFO  Copying bin files..."
+log "INFO  Copying bin files to: $host_bin"
 cp -r $mapr_bin/fusermount $host_bin
 cp -r $mapr_bin/stubfuse $host_bin
 cp -r $mapr_bin/posix-client-platinum $host_bin
 cp -r $mapr_bin/posix-client-basic $host_bin
-log "INFO  Copying support scripts..."
+log "INFO  Copying support script: $host_bin/start-fuse"
 cp $docker_mapr/plugin/start-fuse $host_bin/start-fuse
 chmod 755 $host_bin/*
-log "INFO  Copy service account..."
+log "INFO  Copying service account to: $sa_path"
 mkdir -p $sa_path
 cp -r /var/run/secrets/kubernetes.io/serviceaccount $sa_path
-log "INFO  Create INFO file..."
-echo "$KUBERNETES_SERVICE_LOCATION" > $k8s_path/INFO
-log "INFO  Copy misc files..."
+log "INFO  Creating serviceinfo file: $k8s_path/serviceinfo"
+echo "$KUBERNETES_SERVICE_LOCATION" > $k8s_path/serviceinfo
+log "INFO  Copying misc files to: $k8s_path"
 cp -r $docker_mapr/LICENSE.doc $k8s_path/LICENSE.doc
 cp -r $docker_mapr/NOTICE.txt $k8s_path/NOTICE.txt
 cp -r $docker_mapr/MapRBuildVersion $k8s_path/MapRBuildVersion
-log "INFO  Copying copy-to-mapr file. cp $docker_mapr/plugin/copy2mapr $host_etc/copy2mapr"
+log "INFO  Copying copy-to-mapr file: $docker_mapr/plugin/copy2mapr to: $host_etc/copy2mapr"
+mkdir -p -m 700 $host_etc
 cp $docker_mapr/plugin/copy2mapr $host_etc/copy2mapr
-log "INFO  Creating FLEXPATH file..."
-echo "$FLEXVOLUME_PLUGIN_PATH" > $host_etc/FLEXPATH
+log "INFO  Creating flexpath file at: $host_etc/flexpath"
+echo "$FLEXVOLUME_PLUGIN_PATH" > $host_etc/flexpath
 # Do NOT do a simple copy of plugin. It is not an atomic operation
-log "INFO  Copying plugin file..."
+log "INFO  Copying plugin file: $docker_mapr/plugin/maprfs to: $plugin_dir/.maprfs"
 cp $docker_mapr/plugin/maprfs $plugin_dir/.maprfs
 # Rename plugin file as atomic operation
-log "INFO  Renaming plugin file..."
+log "INFO  Renaming plugin file: $plugin_dir/.maprfs to: $plugin_dir/maprfs"
 mv -f "$plugin_dir/.maprfs" "$plugin_dir/maprfs"
 log "INFO  === Sleeping forever to keep container up ==="
 while true; do sleep 86400; done
