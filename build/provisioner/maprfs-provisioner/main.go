@@ -289,6 +289,8 @@ func (p *maprProvisioner) executeQuery(query url.URL) (*http.Response, error) {
 	// TODO: Take a param to verify via cert authority
 	client := &http.Client{
 		Transport: &http.Transport{
+			IdleConnTimeout:    60 * time.Second,
+			ResponseHeaderTimeout: 60 * time.Second,
 			TLSClientConfig: &tls.Config{
 				KeyLogWriter:       w,
 				InsecureSkipVerify: true,

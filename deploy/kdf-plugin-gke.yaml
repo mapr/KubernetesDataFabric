@@ -1,0 +1,65 @@
+apiVersion: apps/v1beta2
+kind: DaemonSet
+metadata:
+  name: mapr-kdfplugin
+  namespace: mapr-system
+  labels:
+    k8s-app: mapr-kdfplugin
+spec:
+  selector:
+    matchLabels:
+      name: mapr-kdfplugin
+  template:
+    metadata:
+      labels:
+        name: mapr-kdfplugin
+    spec:
+      serviceAccountName: maprkdf
+      tolerations:
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule
+      containers:
+        - name: mapr-kdfplugin
+          imagePullPolicy: Always
+          image: maprtech/kdf-plugin:1.0.0_010_ubuntu
+          command:
+          - bash
+          - -c
+          - /opt/mapr/plugin/copy2host
+          lifecycle:
+            preStop:
+              exec:
+                command: ["bash", "-c", "/opt/mapr/plugin/pre-stop"]
+          resources:
+            requests:
+              memory: "500M"
+              cpu: "500m"
+          env:
+          - name : KUBERNETES_SERVICE_LOCATION
+            value: "35.225.144.151:443"
+          - name : FLEXVOLUME_PLUGIN_PATH
+            value: "/home/kubernetes/flexvolume"
+          volumeMounts:
+          - mountPath: /etc/localtime
+            name: timezone
+            readOnly: true
+          - mountPath: /plugin
+            name: plugindir
+          - mountPath: /host
+            name: host
+          - mountPath: /hostetc
+            name: hostetc
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: timezone
+        hostPath:
+          path: /etc/localtime
+      - name: plugindir
+        hostPath:
+          path: /home/kubernetes/flexvolume
+      - name: host
+        hostPath:
+          path: /opt
+      - name: hostetc
+        hostPath:
+          path: /etc/kubernetes
