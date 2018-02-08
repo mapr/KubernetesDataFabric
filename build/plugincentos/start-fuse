@@ -43,7 +43,7 @@ if [ $sec_type = "secure" ]; then
   fuse_args="$fuse_args --ticket_path $ticket_location"
 fi
 if [ $platinum == "true" ]; then
-  log "INFO  Using platinum client"
+  log "INFO  Using platinum client. platinum=$platinum"
   fuse_program=$platinum_program
   log "INFO  Copying $mapr_lib_path/libMapRClient.so to: $support_path/libMapRClient.so.*"
   cp $mapr_lib_path/libMapRClient.so.1 $support_path/libMapRClient.so.0
@@ -52,29 +52,29 @@ if [ $platinum == "true" ]; then
   cp $mapr_lib_path/libMapRClient.so.1 $support_path/libMapRClient.so.3
   cp $mapr_lib_path/libMapRClient.so.1 $support_path/libMapRClient.so.4
 else
-  log "INFO  Using basic client"
+  log "INFO  Using basic client. platinum=$platinum"
   fuse_program=$basic_program
   log "INFO  Copying $mapr_lib_path/libMapRClient.so to: $support_path/libMapRClient.so.*"
   cp $mapr_lib_path/libMapRClient.so.1 $support_path/libMapRClient.so.0
 fi
-log "INFO  Mounting FUSE  $fuse_program $fuse_args"
+log "INFO  Mounting FUSE via POSIX client: $fuse_program $fuse_args"
 $fuse_program $fuse_args &
 pid=$!
 pidfile="$support_path/fusepid"
-log "INFO  Writing FUSE pid: $pid to support directory: $pidfile..."
+log "INFO  Writing POSIX client pid: $pid to support directory: $pidfile..."
 echo $pid >> $pidfile
 pathfile="$support_path/kpath"
 log "INFO  Writing kpath: $kube_path to support directory: $pathfile..."
 echo $kube_path >> $pathfile
 sleep 5
-log "INFO  Checking FUSE process"
+log "INFO  Checking POSIX client process"
 ps -o pid= -p $pid
 ret=$!
 if [ $ret -eq $pid ]; then
-    log "INFO  FUSE process: $pid is healthy."
+    log "INFO  POSIX client process: $pid is healthy. Check ffs-log.* for more info on running state."
     exit 0
 else
-    log "ERROR  FUSE process: $pid is unhealthy. Check ffs-log.* for more info"
+    log "ERROR  POSIX client process: $pid is unhealthy. Check ffs-log.* for more info"
     exit 1
 fi
 exit 0
