@@ -21,12 +21,12 @@ RUN apt-get update; \
     apt-get install -y apt-utils sudo lsb-release; \
     DEBIAN_FRONTEND=noninteractive apt-get install --allow-unauthenticated -y wget perl syslinux openjdk-8-jdk
 # Install MapR packages
-RUN wget -v http://archive.mapr.com/tools/KubernetesDataFabric/v1.0.0/ubuntu/mapr-client-6.0.0.20180206041848.GA-20180206041848.amd64.deb; \
-    wget -v http://archive.mapr.com/tools/KubernetesDataFabric/v1.0.0/ubuntu/mapr-posix-client-basic_6.0.0.20180206041848.GA-20180206041848_amd64.deb; \
-    wget -v http://archive.mapr.com/tools/KubernetesDataFabric/v1.0.0/ubuntu/mapr-posix-client-platinum_6.0.0.20180206041848.GA-20180206041848_amd64.deb; \
-    dpkg -i /tmp/mapr-client-6.0.0.20180206041848.GA-20180206041848.amd64.deb; \
-    dpkg -i /tmp/mapr-posix-client-basic_6.0.0.20180206041848.GA-20180206041848_amd64.deb; \
-    dpkg -i /tmp/mapr-posix-client-platinum_6.0.0.20180206041848.GA-20180206041848_amd64.deb; \
+RUN wget http://archive.mapr.com/tools/KubernetesDataFabric/v1.0.0/ubuntu/mapr-client-6.0.0.20180206041848.GA-20180206041848.amd64.deb; \
+    wget http://archive.mapr.com/tools/KubernetesDataFabric/v1.0.0/ubuntu/mapr-posix-client-basic_6.0.0.20180206041848.GA-20180206041848_amd64.deb; \
+    wget http://archive.mapr.com/tools/KubernetesDataFabric/v1.0.0/ubuntu/mapr-posix-client-platinum_6.0.0.20180206041848.GA-20180206041848_amd64.deb; \
+    dpkg -i --force-overwrite /tmp/mapr-client-6.0.0.20180206041848.GA-20180206041848.amd64.deb; \
+    dpkg -i --force-overwrite /tmp/mapr-posix-client-basic_6.0.0.20180206041848.GA-20180206041848_amd64.deb; \
+    dpkg -i --force-overwrite /tmp/mapr-posix-client-platinum_6.0.0.20180206041848.GA-20180206041848_amd64.deb; \
     mkdir -p /tmp/lib; \
     cp -r /opt/mapr/lib/libfuse.* /tmp/lib; \
     cp -r /opt/mapr/lib/libMapRClient_c.* /tmp/lib; \

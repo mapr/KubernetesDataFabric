@@ -42,20 +42,20 @@ if [ $sec_type = "secure" ]; then
   log "INFO  Adding --ticket_path $ticket_location to args"
   fuse_args="$fuse_args --ticket_path $ticket_location"
 fi
-if [ $platinum == "true" ]; then
+if [ "$platinum" = "true" ]; then
   log "INFO  Using platinum client. platinum=$platinum"
   fuse_program=$platinum_program
   log "INFO  Copying $mapr_lib_path/libMapRClient.so to: $support_path/libMapRClient.so.*"
-  cp $mapr_lib_path/libMapRClient.so.1 $support_path/libMapRClient.so.0
-  cp $mapr_lib_path/libMapRClient.so.1 $support_path/libMapRClient.so.1
-  cp $mapr_lib_path/libMapRClient.so.1 $support_path/libMapRClient.so.2
-  cp $mapr_lib_path/libMapRClient.so.1 $support_path/libMapRClient.so.3
-  cp $mapr_lib_path/libMapRClient.so.1 $support_path/libMapRClient.so.4
+  cp "$mapr_lib_path/libMapRClient.so.1" "$support_path/libMapRClient.so.0"
+  cp "$mapr_lib_path/libMapRClient.so.1" "$support_path/libMapRClient.so.1"
+  cp "$mapr_lib_path/libMapRClient.so.1" "$support_path/libMapRClient.so.2"
+  cp "$mapr_lib_path/libMapRClient.so.1" "$support_path/libMapRClient.so.3"
+  cp "$mapr_lib_path/libMapRClient.so.1" "$support_path/libMapRClient.so.4"
 else
   log "INFO  Using basic client. platinum=$platinum"
   fuse_program=$basic_program
   log "INFO  Copying $mapr_lib_path/libMapRClient.so to: $support_path/libMapRClient.so.*"
-  cp $mapr_lib_path/libMapRClient.so.1 $support_path/libMapRClient.so.0
+  cp "$mapr_lib_path/libMapRClient.so.1" "$support_path/libMapRClient.so.0"
 fi
 log "INFO  Mounting FUSE via POSIX client: $fuse_program $fuse_args"
 $fuse_program $fuse_args &
