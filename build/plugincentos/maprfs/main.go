@@ -33,8 +33,6 @@ const (
 	plugin_log          = log_path + "/plugin-k8s.log"
 	fuse_script         = client_bin_path + "/start-fuse"
 	copy_script         = copy_path + "/copy2mapr"
-	pod_idx             = 5
-	vol_idx             = 8
 	cldb_default_port   = ":7222"
 	ticket_key          = "CONTAINER_TICKET"
 )
@@ -102,14 +100,18 @@ func linkFiles() {
 // get podid from kpath string
 func getPodId(kpath string) string {
 	podslice := strings.Split(kpath, "/")
-	podid := podslice[pod_idx]
+	slicelen := len(podslice)
+	idx := slicelen - 4
+	podid := podslice[idx]
 	return podid
 }
 
 // get podid from kpath string
 func getVolId(kpath string) string {
 	volslice := strings.Split(kpath, "/")
-	volid := volslice[vol_idx]
+	slicelen := len(volslice)
+	idx := slicelen - 1
+	volid := volslice[idx]
 	return volid
 }
 
