@@ -21,7 +21,7 @@ spec:
       containers:
         - name: mapr-kdfplugin
           imagePullPolicy: Always
-          image: maprtech/kdf-plugin:1.0.0_028_centos7
+          image: maprtech/kdf-plugin:1.0.0_029_centos7
           command:
           - bash
           - -c
