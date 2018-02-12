@@ -4,7 +4,7 @@ metadata:
   name: mapr-kdfprovisioner
   namespace: mapr-system
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: mapr-kdfprovisioner
