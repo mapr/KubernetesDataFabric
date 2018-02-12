@@ -21,7 +21,7 @@ spec:
       containers:
         - name: mapr-kdfplugin
           imagePullPolicy: Always
-          image: maprtech/kdf-plugin:1.0.0_011_ubuntu
+          image: maprtech/kdf-plugin:1.0.0_012_ubuntu
           command:
           - bash
           - -c
@@ -36,7 +36,7 @@ spec:
               cpu: "500m"
           env:
           - name : KUBERNETES_SERVICE_LOCATION
-            value: "10.10.108.153:6443"
+            value: "changeme!:6443"
           - name : FLEXVOLUME_PLUGIN_PATH
             value: "/usr/libexec/kubernetes/kubelet-plugins/volume/exec"
           volumeMounts:

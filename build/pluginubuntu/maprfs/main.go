@@ -135,7 +135,7 @@ func startFuse(kpath string, options map[string]string) string {
 	tsnamespace := options["ticketSecretNamespace"]
 	ticket := ""
 	ticketname := "maprticket_0"
-	args := "-o allow_other -o big_writes -o auto_unmount -o async_dio -o max_background=64 -o auto_inval_data"
+	args := "-o allow_other -o big_writes -o auto_unmount -o async_dio -o max_background=64 -o auto_inval_data --disable_writeback"
 	podid := getPodId(kpath)
 	volid := getVolId(kpath)
 	fmount := client_mounts_path + podid + "-" + volid

@@ -43,7 +43,6 @@ var (
 const (
 	provision_log      = "/opt/mapr/logs/provisioner-k8s.log"
 	provisionerName    = "mapr.com/maprfs"
-	driverName         = "mapr.com/maprfs"
 	provisionerVersion = "v1.0.0"
 	randomSize         = 10
 	adminUserKey       = "MAPR_CLUSTER_USER"
@@ -476,7 +475,7 @@ func (p *maprProvisioner) Provision(options controller.VolumeOptions) (*v1.Persi
 		ObjectMeta: metav1.ObjectMeta{
 			Name: vi.PVName,
 			Annotations: map[string]string{
-				"mapr.com/maprProvisionerIdentity": p.identity,
+				"pv.kubernetes.io/provisioned-by":  p.identity,
 				"mapr.com/provisionerVersion":      provisionerVersion,
 				"mapr.com/description":             description,
 				"mapr.com/restServers":             si.REST,
@@ -493,7 +492,7 @@ func (p *maprProvisioner) Provision(options controller.VolumeOptions) (*v1.Persi
 			},
 			PersistentVolumeSource: v1.PersistentVolumeSource{
 				FlexVolume: &v1.FlexVolumeSource{
-					Driver: driverName,
+					Driver: provisionerName,
 					Options: map[string]string{
 						"volumePath":            vi.Path,
 						"cluster":               si.Cluster,
@@ -517,10 +516,14 @@ func (p *maprProvisioner) Provision(options controller.VolumeOptions) (*v1.Persi
 func (p *maprProvisioner) Delete(volume *v1.PersistentVolume) error {
 
 	p.eventTarget = volume
-	_, ok := volume.Annotations["mapr.com/maprProvisionerIdentity"]
+	prov, ok := volume.Annotations["pv.kubernetes.io/provisioned-by"]
 	if !ok {
-		p.eventRecorder.Event(volume, v1.EventTypeWarning, "DeleteVolumeWarning", "identity annotation on PV is not mapr.com/maprProvisionerIdentity")
-		return &controller.IgnoredError{Reason: "identity annotation on PV is not mapr.com/maprProvisionerIdentity"}
+		p.eventRecorder.Event(volume, v1.EventTypeWarning, "DeleteVolumeWarning", "pv.kubernetes.io/provisioned-by annotation on PV is not available")
+		return &controller.IgnoredError{Reason: "pv.kubernetes.io/provisioned-by annotation on PV is not available"}
+	}
+	if prov != p.identity {
+		p.eventRecorder.Event(volume, v1.EventTypeWarning, "DeleteVolumeWarning", "pv.kubernetes.io/provisioned-by annotation on PV is not mapr.com/maprfs")
+		return &controller.IgnoredError{Reason: "pv.kubernetes.io/provisioned-by annotation on PV is not mapr.com/maprfs"}
 	}
 	Plog.Println("INFO  === Starting volume delete ===")
 	restservers, ok := volume.Annotations["mapr.com/restServers"]
