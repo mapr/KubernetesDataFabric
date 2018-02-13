@@ -6,6 +6,6 @@ Most Pods in a Kubernetes environment should be portable, short-lived, and state
 The MapR Data Fabric for Kubernetes consists of a set of Docker containers and their respective .yaml configuration files for installation into Kubernetes. Once installed, both a Kubernetes FlexVolume Driver for MaprFS and a Kubernetes Dynamic Volume Provisioner are available for both static and dynamic provisioning of MapR storage.
 
 The structure of this project is as follows:
-- The build folder contains the docker images to build the KDF
-- The deploy folder contains the YAML files for KDF installation in kubernetes
-- The examples folder contains a set of example YAML files that create pods connecting to the KDF 
+- The build folder contains the docker images to build the  MapR Data Fabric for Kubernetes
+- The deploy folder contains the YAML files for product installation in Kubernetes
+- The examples folder contains a set of example YAML files that create pods connecting to the data fabric 
