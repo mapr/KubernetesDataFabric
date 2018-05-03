@@ -331,7 +331,7 @@ func (p *maprProvisioner) createMaprVolume(cleanoptions map[string]string, si se
 			p.eventRecorder.Event(p.eventTarget, v1.EventTypeWarning, "ProvisioningError", fmt.Sprintf("Error executing query: %v", err))
 			continue
 		}
-		if resp.StatusCode <= 200 && resp.StatusCode >= 299 {
+		if resp.StatusCode < 200 || resp.StatusCode > 299 {
 			Plog.Printf("ERROR  Authorization Error: %v", err)
 			p.eventRecorder.Event(p.eventTarget, v1.EventTypeWarning, "ProvisioningError", fmt.Sprintf("Authorization Error: %v", err))
 			break

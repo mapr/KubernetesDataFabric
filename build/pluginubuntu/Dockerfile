@@ -21,12 +21,14 @@ RUN apt-get update; \
     apt-get install -y apt-utils sudo lsb-release; \
     DEBIAN_FRONTEND=noninteractive apt-get install --allow-unauthenticated -y wget perl syslinux openjdk-8-jdk
 # Install MapR packages
-RUN wget http://archive.mapr.com/tools/KubernetesDataFabric/v1.0.0/ubuntu/mapr-client-6.0.0.20180206041848.GA-20180206041848.amd64.deb; \
-    wget http://archive.mapr.com/tools/KubernetesDataFabric/v1.0.0/ubuntu/mapr-posix-client-basic_6.0.0.20180206041848.GA-20180206041848_amd64.deb; \
-    wget http://archive.mapr.com/tools/KubernetesDataFabric/v1.0.0/ubuntu/mapr-posix-client-platinum_6.0.0.20180206041848.GA-20180206041848_amd64.deb; \
-    dpkg -i --force-overwrite /tmp/mapr-client-6.0.0.20180206041848.GA-20180206041848.amd64.deb; \
-    dpkg -i --force-overwrite /tmp/mapr-posix-client-basic_6.0.0.20180206041848.GA-20180206041848_amd64.deb; \
-    dpkg -i --force-overwrite /tmp/mapr-posix-client-platinum_6.0.0.20180206041848.GA-20180206041848_amd64.deb; \
+RUN wget http://package.mapr.com/tools/KubernetesDataFabric/v1.0.1/ubuntu/mapr-client-6.0.1.20180404222005.GA-1.amd64.deb; \
+    wget http://package.mapr.com/tools/KubernetesDataFabric/v1.0.1/ubuntu/mapr-librdkafka_0.11.3.201803231414_all.deb; \
+    wget http://package.mapr.com/tools/KubernetesDataFabric/v1.0.1/ubuntu/mapr-posix-client-basic_6.0.1.20180404222005.GA-1_amd64.deb; \
+    wget http://package.mapr.com/tools/KubernetesDataFabric/v1.0.1/ubuntu/mapr-posix-client-platinum_6.0.1.20180404222005.GA-1_amd64.deb; \
+    dpkg -i --force-overwrite /tmp/mapr-librdkafka_0.11.3.201803231414_all.deb; \
+    dpkg -i --force-overwrite /tmp/mapr-client-6.0.1.20180404222005.GA-1.amd64.deb; \
+    dpkg -i --force-overwrite /tmp/mapr-posix-client-basic_6.0.1.20180404222005.GA-1_amd64.deb; \
+    dpkg -i --force-overwrite /tmp/mapr-posix-client-platinum_6.0.1.20180404222005.GA-1_amd64.deb; \
     mkdir -p /tmp/lib; \
     cp -r /opt/mapr/lib/libfuse.* /tmp/lib; \
     cp -r /opt/mapr/lib/libMapRClient_c.* /tmp/lib; \
