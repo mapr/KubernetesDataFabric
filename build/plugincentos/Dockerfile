@@ -27,14 +27,14 @@ RUN rpm --import http://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7; \
 WORKDIR /tmp
 
 # Main Docker Build
-RUN wget http://package.mapr.com/tools/KubernetesDataFabric/v1.0.1/redhat/mapr-client-6.0.1.20180404222005.GA-1.x86_64.rpm; \
+RUN wget wget http://package.mapr.com/tools/KubernetesDataFabric/v1.0.2/redhat/mapr-client-6.0.1.20180710151556.GA-20180710151556.x86_64.rpm; \
     wget http://package.mapr.com/tools/KubernetesDataFabric/v1.0.1/redhat/mapr-librdkafka-0.11.3.201803231414-1.noarch.rpm; \
-    wget http://package.mapr.com/tools/KubernetesDataFabric/v1.0.1/redhat/mapr-posix-client-basic-6.0.1.20180404222005.GA-1.x86_64.rpm; \
-    wget http://package.mapr.com/tools/KubernetesDataFabric/v1.0.1/redhat/mapr-posix-client-platinum-6.0.1.20180404222005.GA-1.x86_64.rpm; \
+    wget http://package.mapr.com/tools/KubernetesDataFabric/v1.0.2/redhat/mapr-posix-client-basic-6.0.1.20180710151556.GA-1.x86_64.rpm; \
+    wget http://package.mapr.com/tools/KubernetesDataFabric/v1.0.2/redhat/mapr-posix-client-platinum-6.0.1.20180710151556.GA-1.x86_64.rpm; \
     rpm -Uvh mapr-librdkafka-0.11.3.201803231414-1.noarch.rpm; \
-    rpm -Uvh mapr-client-6.0.1.20180404222005.GA-1.x86_64.rpm; \
-    rpm -Uvh mapr-posix-client-basic-6.0.1.20180404222005.GA-1.x86_64.rpm; \
-    rpm -Uvh mapr-posix-client-platinum-6.0.1.20180404222005.GA-1.x86_64.rpm; \
+    rpm -Uvh mapr-client-6.0.1.20180710151556.GA-20180710151556.x86_64.rpm; \
+    rpm -Uvh mapr-posix-client-basic-6.0.1.20180710151556.GA-1.x86_64.rpm; \
+    rpm -Uvh mapr-posix-client-platinum-6.0.1.20180710151556.GA-1.x86_64.rpm; \
     mkdir -p /tmp/lib; \
     cp -r /opt/mapr/lib/libfuse.* /tmp/lib; \
     cp -r /opt/mapr/lib/libMapRClient_c.* /tmp/lib; \

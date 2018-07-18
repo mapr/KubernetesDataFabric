@@ -468,7 +468,7 @@ func doInit() {
 		}
 	}
 	Plugin.Println("INFO  === Finished init of MapRfs Plugin ===")
-	fmt.Print(" { \"status\": \"Success\" , \"capabilities\": {\"attach\": false } } ")
+	fmt.Print(" { \"status\": \"Success\" , \"capabilities\": {\"attach\": false, \"selinuxRelabel\": false } } ")
 	os.Exit(0)
 }
 
