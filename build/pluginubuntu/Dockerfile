@@ -24,7 +24,7 @@ RUN apt-get update; \
 RUN wget http://package.mapr.com/tools/KubernetesDataFabric/v1.1.0/ubuntu/mapr-client-6.1.0.20180926230239.GA-1.amd64.deb; \
     wget http://package.mapr.com/tools/KubernetesDataFabric/v1.1.0/ubuntu/mapr-librdkafka_0.11.3.201803231414_all.deb; \
     wget http://package.mapr.com/tools/KubernetesDataFabric/v1.1.0/ubuntu/mapr-posix-client-basic_6.1.0.20180926230239.GA-1_amd64.deb; \
-    wget wget http://package.mapr.com/tools/KubernetesDataFabric/v1.1.0/ubuntu/mapr-posix-client-platinum_6.1.0.20180926230239.GA-1_amd64.deb; \
+    wget http://package.mapr.com/tools/KubernetesDataFabric/v1.1.0/ubuntu/mapr-posix-client-platinum_6.1.0.20180926230239.GA-1_amd64.deb; \
     dpkg -i --force-overwrite /tmp/mapr-librdkafka_0.11.3.201803231414_all.deb; \
     dpkg -i --force-overwrite /tmp/mapr-client-6.1.0.20180926230239.GA-1.amd64.deb; \
     dpkg -i --force-overwrite /tmp/mapr-posix-client-basic_6.1.0.20180926230239.GA-1_amd64.deb; \
