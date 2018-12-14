@@ -100,6 +100,7 @@ if [ $versions_match -eq $no ]; then
     cp -r $mapr_bin/stubfuse $host_bin
     cp -r $mapr_bin/posix-client-platinum $host_bin
     cp -r $mapr_bin/posix-client-basic $host_bin
+    cp -r $mapr_bin/mruuidgen $host_bin
 fi
 log "INFO  Copying support scripts from: $docker_mapr/plugin/start-fuse to: $host_bin/start-fuse"
 cp $mapr_bin/start-fuse $host_bin/start-fuse

@@ -36,7 +36,13 @@ import (
 var (
 	master      = flag.String("master", "", "Master URL")
 	kubeconfig  = flag.String("kubeconfig", "", "Absolute path to the kubeconfig")
-	legalparams = [...]string{"cldbHosts", "maprSecretName", "maprSecretNamespace", "ticketSecretName", "ticketSecretNamespace", "namePrefix", "cluster", "mount", "mountPrefix", "securityType", "restServers", "platinum", "mountOptions", "readOnly", "reclaimPolicy", "advisoryquota", "ae", "aetype", "allowgrant", "allowinherit", "auditenabled", "cluster", "coalesce", "containerallocationfactor", "criticalrereplicationtimeoutsec", "dataauditops", "dbindexlagsecalarmthresh", "dbrepllagsecalarmthresh", "enforceminreplicationforio", "forceauditenable", "group", "inherit", "localvolumehost", "localvolumeport", "maxinodesalarmthreshold", "maxnssizembalarmthreshold", "minreplication", "mirrorschedule", "mirrorthrottle", "nsminreplication", "nsreplication", "readAce", "readonly", "replication", "replicationtype", "rereplicationtimeoutsec", "rootdirperms", "schedule", "skipinherit", "source", "tenantuser", "topology", "type", "user", "wiresecurityenabled", "writeaAce"}
+	legalparams = [...]string{"cldbHosts", "maprSecretName", "maprSecretNamespace", "ticketSecretName", "ticketSecretNamespace", "namePrefix", "cluster", "mount", "mountPrefix", "securityType", "restServers",
+		"platinum", "mountOptions", "readOnly", "reclaimPolicy", "advisoryquota", "ae", "aetype", "allowgrant", "allowinherit", "auditenabled", "autooffloadthresholdgb", "cluster", "coalesce",
+		"compactionoverheadthreshold", "compactionschedule","containerallocationfactor", "criticalrereplicationtimeoutsec", "dare", "dataauditops", "dbindexlagsecalarmthresh", "dbrepllagsecalarmthresh",
+		"ecenable", "ecscheme", "ectopology", "enforceminreplicationforio", "forceauditenable", "group", "inherit", "localvolumehost", "localvolumeport", "maxinodesalarmthreshold", "maxnssizembalarmthreshold",
+		"metricsenabled", "minreplication", "mirrorschedule", "mirrorthrottle", "namecontainerdatathreshold", "nsminreplication", "nsreplication", "readAce", "readonly", "recallexpirytime", "replication",
+		"replicationtype", "rereplicationtimeoutsec", "rootdirperms", "rootdiruser", "schedule", "skipinherit", "source", "tenantuser", "tierencryption", "tieringenable", "tieringrule", "tierkey", "tiername",
+		"topology", "type", "user", "wiresecurityenabled", "writeaAce"}
 	Plog        *log.Logger
 )
 

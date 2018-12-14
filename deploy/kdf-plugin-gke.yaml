@@ -21,7 +21,7 @@ spec:
       containers:
         - name: mapr-kdfplugin
           imagePullPolicy: Always
-          image: maprtech/kdf-plugin:1.0.2_001_ubuntu
+          image: maprtech/kdf-plugin:1.1.0_001_ubuntu
           command:
           - bash
           - -c

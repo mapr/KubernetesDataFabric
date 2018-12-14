@@ -17,7 +17,13 @@ sec_type=$5
 ticket_location=$6
 config=$7
 platinum=$8
-flags=$9
+podid=$9
+flags=${10}
+
+# K8S-353: Run fuse in the process scope instead of kubelet.service scope.
+# Running it in kubelet.service scope will kill fuse process on kubelet restart.
+systemdrun_with_scope="/usr/bin/systemd-run --scope"
+
 conf_file="$support_path/mapr-clusters.conf"
 fuse_args="$mount_path -d --log_path $ffs_log_path --client_lib_path $support_path --conf_file $conf_file $flags"
 log() {
@@ -26,6 +32,17 @@ log() {
   message="$prefix$1"
   echo $message >> $fuse_log
 }
+
+# Use pod-id as the hostname for the posix-client instance
+HOSTNAME_FILE="$k8s_dir/hostname"
+log "INFO Setting Posix client hostname: ${podid}" >> $fuse_log
+echo $podid > ${HOSTNAME_FILE}
+ # Generate hostid for the posix client
+HOSTID_FILE="$k8s_dir/hostid"
+log "INFO Setting posix client hostid.." >> $fuse_log
+$mapr_bin/mruuidgen > ${HOSTID_FILE}
+chmod 444 ${HOSTID_FILE}
+
 log "INFO  export MAPR_HOME=$k8s_dir"
 export MAPR_HOME=$k8s_dir
 log "INFO  Setting ulimits... "
@@ -58,11 +75,13 @@ else
   cp "$mapr_lib_path/libMapRClient.so.1" "$support_path/libMapRClient.so.0"
 fi
 log "INFO  Mounting FUSE via POSIX client: $fuse_program $fuse_args"
-$fuse_program $fuse_args &
+$systemdrun_with_scope $fuse_program $fuse_args &
 pid=$!
 pidfile="$support_path/fusepid"
 log "INFO  Writing POSIX client pid: $pid to support directory: $pidfile..."
-echo $pid >> $pidfile
+# K8S-310: During restart, the duplicate mount can cause multiple fuse pid
+# to written to fusepid file.
+echo $pid > $pidfile
 pathfile="$support_path/kpath"
 log "INFO  Writing kpath: $kube_path to support directory: $pathfile..."
 echo $kube_path >> $pathfile
