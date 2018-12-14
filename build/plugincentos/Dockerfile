@@ -27,18 +27,20 @@ RUN rpm --import http://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7; \
 WORKDIR /tmp
 
 # Main Docker Build
-RUN wget wget http://package.mapr.com/tools/KubernetesDataFabric/v1.0.2/redhat/mapr-client-6.0.1.20180710151556.GA-20180710151556.x86_64.rpm; \
-    wget http://package.mapr.com/tools/KubernetesDataFabric/v1.0.1/redhat/mapr-librdkafka-0.11.3.201803231414-1.noarch.rpm; \
-    wget http://package.mapr.com/tools/KubernetesDataFabric/v1.0.2/redhat/mapr-posix-client-basic-6.0.1.20180710151556.GA-1.x86_64.rpm; \
-    wget http://package.mapr.com/tools/KubernetesDataFabric/v1.0.2/redhat/mapr-posix-client-platinum-6.0.1.20180710151556.GA-1.x86_64.rpm; \
+RUN wget http://package.mapr.com/tools/KubernetesDataFabric/v1.1.0/redhat/mapr-client-6.1.0.20180926230239.GA-1.x86_64.rpm; \
+    wget http://package.mapr.com/tools/KubernetesDataFabric/v1.1.0/redhat/mapr-librdkafka-0.11.3.201803231414-1.noarch.rpm; \
+    wget http://package.mapr.com/tools/KubernetesDataFabric/v1.1.0/redhat/mapr-posix-client-basic-6.1.0.20180926230239.GA-1.x86_64.rpm; \
+    wget http://package.mapr.com/tools/KubernetesDataFabric/v1.1.0/redhat/mapr-posix-client-platinum-6.1.0.20180926230239.GA-1.x86_64.rpm; \
     rpm -Uvh mapr-librdkafka-0.11.3.201803231414-1.noarch.rpm; \
-    rpm -Uvh mapr-client-6.0.1.20180710151556.GA-20180710151556.x86_64.rpm; \
-    rpm -Uvh mapr-posix-client-basic-6.0.1.20180710151556.GA-1.x86_64.rpm; \
-    rpm -Uvh mapr-posix-client-platinum-6.0.1.20180710151556.GA-1.x86_64.rpm; \
+    rpm -Uvh mapr-client-6.1.0.20180926230239.GA-1.x86_64.rpm; \
+    rpm -Uvh mapr-posix-client-basic-6.1.0.20180926230239.GA-1.x86_64.rpm; \
+    rpm -Uvh mapr-posix-client-platinum-6.1.0.20180926230239.GA-1.x86_64.rpm; \
     mkdir -p /tmp/lib; \
+    mkdir -p /tmp/bin; \
     cp -r /opt/mapr/lib/libfuse.* /tmp/lib; \
     cp -r /opt/mapr/lib/libMapRClient_c.* /tmp/lib; \
     cp -r /opt/mapr/lib/libMapRClient.* /tmp/lib; \
+    cp /opt/mapr/server/mruuidgen /tmp/bin; \
     cp /usr/lib/jvm/jre/lib/amd64/server/libjvm.so /tmp/lib/libjvm.so; \
     rm -rf /opt/mapr/contrib; \
     rm -rf /opt/mapr/conf; \
@@ -56,6 +58,7 @@ RUN wget wget http://package.mapr.com/tools/KubernetesDataFabric/v1.0.2/redhat/m
     rm -rf /opt/mapr/bin/m*; \
     mkdir -p /opt/mapr/lib; \
     cp -r /tmp/lib/* /opt/mapr/lib; \
+    cp /tmp/bin/mruuidgen /opt/mapr/bin/; \
     rm -rf /tmp
 
 # Use Small Image

@@ -21,18 +21,20 @@ RUN apt-get update; \
     apt-get install -y apt-utils sudo lsb-release; \
     DEBIAN_FRONTEND=noninteractive apt-get install --allow-unauthenticated -y wget perl syslinux openjdk-8-jdk
 # Install MapR packages
-RUN wget http://package.mapr.com/tools/KubernetesDataFabric/v1.0.2/ubuntu/mapr-client-6.0.1.20180710151556.GA-20180710151556.amd64.deb; \
-    wget http://package.mapr.com/tools/KubernetesDataFabric/v1.0.1/ubuntu/mapr-librdkafka_0.11.3.201803231414_all.deb; \
-    wget http://package.mapr.com/tools/KubernetesDataFabric/v1.0.2/ubuntu/mapr-posix-client-basic_6.0.1.20180710151556.GA-20180710151556_amd64.deb; \
-    wget http://package.mapr.com/tools/KubernetesDataFabric/v1.0.2/ubuntu/mapr-posix-client-platinum_6.0.1.20180710151556.GA-20180710151556_amd64.deb; \
+RUN wget http://package.mapr.com/tools/KubernetesDataFabric/v1.1.0/ubuntu/mapr-client-6.1.0.20180926230239.GA-1.amd64.deb; \
+    wget http://package.mapr.com/tools/KubernetesDataFabric/v1.1.0/ubuntu/mapr-librdkafka_0.11.3.201803231414_all.deb; \
+    wget http://package.mapr.com/tools/KubernetesDataFabric/v1.1.0/ubuntu/mapr-posix-client-basic_6.1.0.20180926230239.GA-1_amd64.deb; \
+    wget wget http://package.mapr.com/tools/KubernetesDataFabric/v1.1.0/ubuntu/mapr-posix-client-platinum_6.1.0.20180926230239.GA-1_amd64.deb; \
     dpkg -i --force-overwrite /tmp/mapr-librdkafka_0.11.3.201803231414_all.deb; \
-    dpkg -i --force-overwrite /tmp/mapr-client-6.0.1.20180710151556.GA-20180710151556.amd64.deb; \
-    dpkg -i --force-overwrite /tmp/mapr-posix-client-basic_6.0.1.20180710151556.GA-20180710151556_amd64.deb; \
-    dpkg -i --force-overwrite /tmp/mapr-posix-client-platinum_6.0.1.20180710151556.GA-20180710151556_amd64.deb; \
+    dpkg -i --force-overwrite /tmp/mapr-client-6.1.0.20180926230239.GA-1.amd64.deb; \
+    dpkg -i --force-overwrite /tmp/mapr-posix-client-basic_6.1.0.20180926230239.GA-1_amd64.deb; \
+    dpkg -i --force-overwrite /tmp/mapr-posix-client-platinum_6.1.0.20180926230239.GA-1_amd64.deb; \
     mkdir -p /tmp/lib; \
+    mkdir -p /tmp/bin; \
     cp -r /opt/mapr/lib/libfuse.* /tmp/lib; \
     cp -r /opt/mapr/lib/libMapRClient_c.* /tmp/lib; \
     cp -r /opt/mapr/lib/libMapRClient.* /tmp/lib; \
+    cp /opt/mapr/server/mruuidgen /tmp/bin; \
     cp /usr/lib/jvm/java-8-openjdk-amd64/jre/lib/amd64/server/libjvm.so /tmp/lib/libjvm.so; \
     rm -rf /opt/mapr/contrib; \
     rm -rf /opt/mapr/conf; \
@@ -50,6 +52,7 @@ RUN wget http://package.mapr.com/tools/KubernetesDataFabric/v1.0.2/ubuntu/mapr-c
     rm -rf /opt/mapr/bin/m*; \
     mkdir -p /opt/mapr/lib; \
     cp -r /tmp/lib/* /opt/mapr/lib; \
+    cp /tmp/bin/mruuidgen /opt/mapr/bin/; \
     rm -rf /tmp
 
 # Use Small Image. Main Docker Build

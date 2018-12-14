@@ -75,6 +75,7 @@ cp -r $mapr_bin/fusermount $host_bin
 cp -r $mapr_bin/stubfuse $host_bin
 cp -r $mapr_bin/posix-client-platinum $host_bin
 cp -r $mapr_bin/posix-client-basic $host_bin
+cp -r $mapr_bin/mruuidgen $host_bin
 log "INFO  Copying support script: $host_bin/start-fuse"
 cp $docker_mapr/plugin/start-fuse $host_bin/start-fuse
 chmod 755 $host_bin/*

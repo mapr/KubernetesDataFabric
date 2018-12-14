@@ -266,11 +266,11 @@ func startFuse(kpath string, options map[string]string) string {
 			os.Exit(1)
 		}
 		conf = cluster + " secure=true " + cldblist
-		Plugin.Printf("INFO  Creating cluster info: ", conf)
+		Plugin.Printf("INFO  Creating cluster info: %s", conf)
 	}
 	// Setup command to call FUSE
 	Plugin.Printf("INFO  Calling FUSE script: %s...", fuse_script)
-	cmd := exec.Command(fuse_script, fmount, spath, ffspath, kpath, sectype, ticketfile, conf, platinum, args)
+	cmd := exec.Command(fuse_script, fmount, spath, ffspath, kpath, sectype, ticketfile, conf, platinum, podid, args)
 	// Call FUSE
 	err = cmd.Run()
 	if err != nil {
